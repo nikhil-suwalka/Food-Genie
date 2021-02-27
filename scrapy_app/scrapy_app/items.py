@@ -5,12 +5,22 @@
 
 import scrapy
 from scrapy_djangoitem import DjangoItem
-from main_app.models import Recipe
+
 
 # class ScrapyAppItem(scrapy.Item):
 #     # define the fields for your item here like:
 #     # name = scrapy.Field()
 #     pass
 
-class RecipeItem(DjangoItem):
-    django_model = Recipe
+class RecipeItem(scrapy.Item):
+
+    title = scrapy.Field()
+    details = scrapy.Field()
+    ingredients = scrapy.Field()
+    directions = scrapy.Field()
+    nutrients = scrapy.Field()
+    cooking_info = scrapy.Field()
+    link = scrapy.Field()
+    pass
+
+

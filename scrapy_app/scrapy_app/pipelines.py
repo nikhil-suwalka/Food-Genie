@@ -10,5 +10,10 @@ from itemadapter import ItemAdapter
 
 class ScrapyAppPipeline:
     def process_item(self, item, spider):
-        item.save()
+
+        out = open("crawl_output.txt", "w")
+        out.write(item)
+        out.close()
+        print("qwertyuiop")
+        print(item)
         return item

@@ -134,3 +134,8 @@ NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:nsuwalka@localhost:7687'
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50
+
+
+ITEM_PIPELINES = {
+   'scrapy_app.pipelines.ScrapyAppPipeline': 300,
+}

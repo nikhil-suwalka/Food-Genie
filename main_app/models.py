@@ -16,7 +16,7 @@ class Ingredient(StructuredNode):
 
 class Recipe(StructuredNode):
     recipe_id = UniqueIdProperty()
-    title = StringProperty(required=True)
+    name = StringProperty(required=True)
     details = StringProperty(required=True)
     ingredients = ArrayProperty(base_property=StringProperty(), required=True)
     calories = FloatProperty(required=True)
@@ -25,6 +25,7 @@ class Recipe(StructuredNode):
     preparation_time = StringProperty(required=True)
     cooking_time = StringProperty(required=True)
     total_time = StringProperty(required=True)
+    link = StringProperty(required=True)
 
     ingredient = RelationshipTo(Ingredient, "contains")
 

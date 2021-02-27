@@ -1,9 +1,7 @@
 import scrapy
 import logging
+from ..items import RecipeItem
 
-
-class RecipeItem(scrapy.Item):
-    ingredient = scrapy.Field()
 
 
 class RecipeSpider(scrapy.Spider):
@@ -30,7 +28,7 @@ class RecipeSpider(scrapy.Spider):
             # }
 
             yield scrapy.Request(url=links[i], callback=self.parse_links,
-                                 meta={"title": title[i], "details": details[i]})
+                                 meta={"title": title[i], "details": details[i], "link": links[i]})
 
     def parse_links(self, response):
         logging.info(response.url)
@@ -58,11 +56,35 @@ class RecipeSpider(scrapy.Spider):
         for cooking in cookings:
             cooking_details[cooking.xpath("div[1]/text()").get().strip()] = cooking.xpath("div[2]/text()").get().strip()
 
-        yield {
-            "title": response.request.meta["title"],
-            "details": response.request.meta["details"],
-            "ingredients": ingredients,
-            "directions": directions,
-            "nutrients": nutrition_dict,
-            "cooking_info": cooking_details
-        }
+        recipe = RecipeItem()
+
+        recipe["title"] = response.request.meta["title"]
+        recipe["details"] = response.request.meta["details"]
+        recipe["ingredients"] = ingredients
+        recipe["directions"] = directions
+        recipe["nutrients"] = nutrition_dict
+        recipe["cooking_info"] = cooking_details
+        recipe["link"] = response.request.meta["link"]
+
+        # recipe["name"] = response.request.meta["title"]
+        # recipe["details"] = response.request.meta["details"]
+        # recipe["ingredients"] = ingredients
+        # recipe["calories"] = nutrition_dict["total calories"]
+        # recipe["directions"] = directions
+        # recipe["nutrients"] = nutrition_dict
+        # recipe["preparation_time"] = cooking_details[0]
+        # recipe["cooking_time"] = cooking_details[1]
+        # recipe["total_time"] = cooking_details[2]
+        # recipe["link"] = response.request.meta["link"]
+
+        yield recipe
+
+        # yield {
+        #     "title": response.request.meta["title"],
+        #     "details": response.request.meta["details"],
+        #     "link": response.request.meta["link"],
+        #     "ingredients": ingredients,
+        #     "directions": directions,
+        #     "nutrients": nutrition_dict,
+        #     "cooking_info": cooking_details
+        # }
