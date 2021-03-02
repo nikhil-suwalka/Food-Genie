@@ -54,6 +54,9 @@ def checkIngredient(tx, ing):
 def createIngredient(tx, ing):
     tx.run("CREATE (n:Ingredient {name: $name})", name=ing)
 
+def createRelationship(tx,rid,iid):
+    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE a.identity = $rid AND b.identity = $idd CREATE (a)-[r:RELTYPE]->(b) RETURN type(r)", rid=rid, iid=iid)
+
 
 def addNewRecipe(conn, item):
     results = []
