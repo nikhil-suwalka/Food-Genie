@@ -13,8 +13,6 @@ class Command(BaseCommand):
         # super().add_arguments(parser)
 
     def handle(self, *args, **options):
-        print("asdfghjkl")
-        print(options["arg"])
         sett = Settings()
         sett.setmodule(my_settings)
 

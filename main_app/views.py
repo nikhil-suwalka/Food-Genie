@@ -20,7 +20,6 @@ def homeview(request):
     t1 = threading.Thread(target=crawl)
     t1.start()
     # t1.join()
-    print("Done1")
 
     # stream = os.popen('dir')
     # output = stream.read()
