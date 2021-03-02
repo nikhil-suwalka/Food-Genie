@@ -3,11 +3,9 @@ import logging
 from ..items import RecipeItem
 
 
-
 class RecipeSpider(scrapy.Spider):
     name = "RecipeFetcher"
     allowed_domains = ['www.allrecipes.com']
-
 
     def __init__(self, ingredients=None, **kwargs):
         ingredients = ingredients.split()
@@ -17,14 +15,12 @@ class RecipeSpider(scrapy.Spider):
         for i in range(len(ingredients)):
             link += ingredients[i]
             link += ","
+
         self.start_urls = [link[:-1]]
-        print("abcd", ingredients)
+
         super().__init__(**kwargs)
 
     # start_urls = ["https://www.allrecipes.com/search/results/?ingIncl=paneer,potato&sort=re"]
-
-
-
 
     def parse(self, response, **kwargs):
         title = response.xpath("//h3/a/span/text()").getall()
@@ -67,6 +63,10 @@ class RecipeSpider(scrapy.Spider):
             cooking_details[cooking.xpath("div[1]/text()").get().strip()] = cooking.xpath("div[2]/text()").get().strip()
 
         recipe = RecipeItem()
+
+        for item in ["prep", "cook", "total"]:
+            if item not in cooking_details:
+                cooking_details[item] = "N/A"
 
         recipe["title"] = response.request.meta["title"]
         recipe["details"] = response.request.meta["details"]

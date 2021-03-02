@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
-from scrapy_app.scrapy_app.spiders import RecipeFetcher
-from scrapy.crawler import CrawlerProcess, CrawlerRunner
-from scrapy.utils.project import get_project_settings
+from scrapy.crawler import CrawlerProcess
 from scrapy.settings import Settings
+
 from scrapy_app.scrapy_app import settings as my_settings
+from scrapy_app.scrapy_app.spiders import RecipeFetcher
+
 
 class Command(BaseCommand):
     help = "Release the spiders"
@@ -17,11 +18,7 @@ class Command(BaseCommand):
         sett.setmodule(my_settings)
 
         process = CrawlerProcess(settings=sett)
-        # process = CrawlerRunner(settings=sett)
-
-        # process = CrawlerProcess(get_project_settings())
         process.crawl(RecipeFetcher.RecipeSpider, ingredients=options["arg"])
         process.start()
-        # process.join()
 
 
