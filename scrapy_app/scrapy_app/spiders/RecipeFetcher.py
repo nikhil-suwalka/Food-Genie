@@ -7,14 +7,24 @@ from ..items import RecipeItem
 class RecipeSpider(scrapy.Spider):
     name = "RecipeFetcher"
     allowed_domains = ['www.allrecipes.com']
-    rec = ["paneer", "potato"]
-    link = "https://www.allrecipes.com/search/results/?ingIncl="
-    for i in range(len(rec)):
-        link += rec[i]
-        link += ","
-    start_urls = [link[:-1]]
+
+
+    def __init__(self, ingredients=None, **kwargs):
+        ingredients = ingredients.split()
+        # rec = ["paneer", "potato"]
+
+        link = "https://www.allrecipes.com/search/results/?ingIncl="
+        for i in range(len(ingredients)):
+            link += ingredients[i]
+            link += ","
+        self.start_urls = [link[:-1]]
+        print("abcd", ingredients)
+        super().__init__(**kwargs)
 
     # start_urls = ["https://www.allrecipes.com/search/results/?ingIncl=paneer,potato&sort=re"]
+
+
+
 
     def parse(self, response, **kwargs):
         title = response.xpath("//h3/a/span/text()").getall()
