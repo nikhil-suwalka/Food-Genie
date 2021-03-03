@@ -7,10 +7,44 @@
 # useful for handling different item types with a single interface
 
 import neo4j
+import spacy, re
+from fuzzywuzzy import process
+nlp = spacy.load('en_core_web_sm')
 
+
+def getMatches(str2Match: str, strOptions: list):
+    highest = process.extractOne(str2Match, strOptions, score_cutoff=80)
+    return highest[0] if highest else None
+
+
+def _filter(token):
+    if len(token) < 2:
+        return False
+    if token.is_stop:
+        return False
+    if token.is_digit:
+        return False
+    if token.like_num:
+        return False
+    return True
+
+def getProcessedIngredients(ingredient):
+    blacklist = ["cup", "teaspoon", "teaspoons", "cups", "tablespoons", "tablespoon", "medium", "large", "small",
+                 "ounce",
+                 "ounces", "cube", "cubes", "inch", "inches", "pound", "pounds", "cubed", "piece", "pieces", "halves"]
+
+    ingredient = re.sub("([\(\[]).*?([\)\]])", "\g<1>\g<2>", ingredient)
+    # ingredient = ingredient.split(",")[0]
+    var = nlp(ingredient)
+    ingr = []
+    for token in var:
+        if str(token) not in blacklist and _filter(token):
+            ingr.append(str(token))
+        # print(token, token.tag_, token.pos_, spacy.explain(token.tag_))
+    return ingr
 
 def getConnection():
-    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "nsuwalka"))
+    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
     return conn
 
 
@@ -64,17 +98,19 @@ def addNewRecipe(conn, item):
         iids = []
 
         for ing in item['ingredients']:
-            result = session.read_transaction(checkIngredient, ing)
-
-            if len(result) == 0:
-                session.write_transaction(createIngredient, ing)
-                print(session.read_transaction(checkIngredient, ing), "TEST")
+            # result = session.read_transaction(checkIngredient, ing)
+            processed_ings = getProcessedIngredients(ing)
+            db_ings = getMatchedIngredients(conn,processed_ings)
+            ing = " ".join(processed_ings)
+            matched_ing = getMatches(ing, list(db_ings.keys()))
+            if len(db_ings) == 0 or not matched_ing:
+                session.write_transaction(createIngredient,ing)
+                # print(session.read_transaction(checkIngredient, ing), "TEST")
                 iid = session.read_transaction(checkIngredient, ing)[0]
-
                 iids.append(iid)
                 print("Created", ing)
             else:
-                iids.append(result[0])
+                iids.append(db_ings[matched_ing])
         # create recipe
         session.write_transaction(createRecipe, item)
         rid = session.read_transaction(checkRecipe, item['link'])[0]
@@ -84,11 +120,22 @@ def addNewRecipe(conn, item):
         for iid in iids:
             session.write_transaction(createRelationship, rid, iid)
 
+def containIngredientKeyword(tx,ing):
+    result = tx.run("MATCH (i:Ingredient) WHERE i.name CONTAINS $ing return i as ingredient",ing=ing)
+    return {r['ingredient']['name']:r['ingredient'].id for r in result}
+
+def getMatchedIngredients(conn,ings):
+    iids = {}
+    session = conn.session()
+    for ing in ings:
+        recipes = session.read_transaction(containIngredientKeyword, ing)
+        iids.update(recipes)
+    return iids
+
 
 class ScrapyAppPipeline:
     def process_item(self, item, spider):
         conn = getConnection()
         addNewRecipe(conn, item)
-
         conn.close()
         return item

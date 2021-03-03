@@ -9,7 +9,7 @@ error = 0
 unique_ingredients = set()
 for i in range(len(data)):
     try:
-        d = data.iloc[i, 0].replace("'", "\"")
+        d = data.iloc[i, 10].replace("'", "\"")
         j = json.loads(d)
         for ingr in j:
             unique_ingredients.add(ingr)
