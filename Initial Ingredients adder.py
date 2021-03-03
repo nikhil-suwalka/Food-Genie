@@ -1,6 +1,7 @@
 import pandas as pd
 from scrapy_app.scrapy_app.pipelines import *
 
+# CSV downloaded from https://www.kaggle.com/shuyangli94/food-com-recipes-and-user-interactions/notebooks
 data = pd.read_csv("RAW_recipes.csv")
 import json
 
