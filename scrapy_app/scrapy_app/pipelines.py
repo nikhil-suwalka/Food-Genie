@@ -36,9 +36,9 @@ def createRecipe(tx, item):
                 calories=item["nutrients"]["total calories"],
                 directions=item["directions"],
                 nutrients=str(item["nutrients"]).replace('\'', '"'),
-                preparation_time=item["cooking_info"]["prep:"],
-                cooking_time=item["cooking_info"]["cook:"],
-                total_time=item["cooking_info"]["total:"],
+                preparation_time=item["cooking_info"]["prep"],
+                cooking_time=item["cooking_info"]["cook"],
+                total_time=item["cooking_info"]["total"],
                 link=item["link"])
 
 
