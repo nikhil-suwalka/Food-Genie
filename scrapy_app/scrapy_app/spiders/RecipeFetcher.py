@@ -21,9 +21,13 @@ class RecipeSpider(scrapy.Spider):
         super().__init__(**kwargs)
 
     def parse(self, response, **kwargs):
-        title = response.xpath("//h3/a/span/text()").getall()
-        links = response.xpath("//h3/a/@href").getall()
-        details = response.xpath("//a/div[@class='fixed-recipe-card__description']/text()").getall()
+        title = response.xpath("//div/div/div/a/h3[@class='card__title']/text()").getall()
+        links = response.xpath(
+            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/a/@href").getall()
+        details = response.xpath(
+            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/div[@class='card__summary']/text()").getall()
+
+
         for i in range(len(links)):
             # yield {
             #     "title": title[i],
@@ -32,7 +36,7 @@ class RecipeSpider(scrapy.Spider):
             # }
 
             yield scrapy.Request(url=links[i], callback=self.parse_links,
-                                 meta={"title": title[i], "details": details[i], "link": links[i]})
+                                 meta={"title": title[i].strip(), "details": details[i].strip(), "link": links[i]})
 
     def parse_links(self, response):
         logging.info(response.url)

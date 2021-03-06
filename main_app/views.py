@@ -3,8 +3,8 @@ import threading
 
 from django.http import HttpResponse
 
+from .models import Ingredient, Recipe
 
-# from .models import Ingredient, Recipe
 
 # Create your views here.
 
@@ -14,12 +14,17 @@ def crawl():
     # management.call_command('crawl', "paneer potato")
 
 
-
 def homeview(request):
-
     t1 = threading.Thread(target=crawl)
     t1.start()
-    # t1.join()
-
+    t1.join()
 
     return HttpResponse()
+
+
+def retrieve(request):
+    # all = Ingredient.nodes.all()
+    all = Ingredient.nodes.get(name='chicken')
+    print(all)
+    return HttpResponse()
+
