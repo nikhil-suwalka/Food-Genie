@@ -86,7 +86,7 @@ def createIngredient(tx, ing):
 
 
 def createRelationship(tx, rid, iid):
-    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid CREATE (a)-[r:CONTAINS]->(b)", rid=rid,
+    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
            iid=iid)
 
 
