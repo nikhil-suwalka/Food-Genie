@@ -8,7 +8,7 @@ class RecipeSpider(scrapy.Spider):
     allowed_domains = ['www.allrecipes.com']
 
     def __init__(self, ingredients=None, **kwargs):
-        ingredients = ingredients.split()
+        ingredients = ingredients.split(",")
         # rec = ["paneer", "potato"]
 
         link = "https://www.allrecipes.com/search/results/?ingIncl="
@@ -16,17 +16,22 @@ class RecipeSpider(scrapy.Spider):
             link += ingredients[i]
             link += ","
 
-        self.start_urls = [link[:-1]]
+        self.start_urls = [link[:-1]+"&sort=re"]
 
         super().__init__(**kwargs)
 
     def parse(self, response, **kwargs):
-        title = response.xpath("//div/div/div/a/h3[@class='card__title']/text()").getall()
-        links = response.xpath(
-            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/a/@href").getall()
-        details = response.xpath(
-            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/div[@class='card__summary']/text()").getall()
 
+        # NEW
+        # title = response.xpath("//div/div/div/a/h3[@class='card__title']/text()").getall()
+        # links = response.xpath(
+        #     "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/a/@href").getall()
+        # details = response.xpath(
+        #     "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/div[@class='card__summary']/text()").getall()
+
+        title = response.xpath("//h3/a/span/text()").getall()
+        links = response.xpath("//h3/a/@href").getall()
+        details = response.xpath("//a/div[@class='fixed-recipe-card__description']/text()").getall()
 
         for i in range(len(links)):
             # yield {

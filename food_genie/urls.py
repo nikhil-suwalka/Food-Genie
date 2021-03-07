@@ -18,6 +18,5 @@ from django.urls import path
 from main_app.views import *
 urlpatterns = [
     path("", homeview, name="Home"),
-    path("all", retrieve, name="Retrieve all"),
     path('admin/', admin.site.urls),
 ]

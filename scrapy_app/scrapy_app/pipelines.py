@@ -7,8 +7,10 @@
 # useful for handling different item types with a single interface
 
 import neo4j
-import spacy, re
+import re
+import spacy
 from fuzzywuzzy import process
+
 nlp = spacy.load('en_core_web_sm')
 
 
@@ -28,6 +30,7 @@ def _filter(token):
         return False
     return True
 
+
 def getProcessedIngredients(ingredient):
     blacklist = ["cup", "teaspoon", "teaspoons", "cups", "tablespoons", "tablespoon", "medium", "large", "small",
                  "ounce",
@@ -43,8 +46,10 @@ def getProcessedIngredients(ingredient):
         # print(token, token.tag_, token.pos_, spacy.explain(token.tag_))
     return ingr
 
+
 def getConnection():
-    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
+    # conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
+    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "nsuwalka"))
     return conn
 
 
@@ -86,7 +91,7 @@ def createIngredient(tx, ing):
 
 
 def createRelationship(tx, rid, iid):
-    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid CREATE (a)-[r:CONTAINS]->(b)", rid=rid,
+    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
            iid=iid)
 
 
@@ -100,11 +105,11 @@ def addNewRecipe(conn, item):
         for ing in item['ingredients']:
             # result = session.read_transaction(checkIngredient, ing)
             processed_ings = getProcessedIngredients(ing)
-            db_ings = getMatchedIngredients(conn,processed_ings)
+            db_ings = getMatchedIngredients(conn, processed_ings)
             ing = " ".join(processed_ings)
             matched_ing = getMatches(ing, list(db_ings.keys()))
             if len(db_ings) == 0 or not matched_ing:
-                session.write_transaction(createIngredient,ing)
+                session.write_transaction(createIngredient, ing)
                 # print(session.read_transaction(checkIngredient, ing), "TEST")
                 iid = session.read_transaction(checkIngredient, ing)[0]
                 iids.append(iid)
@@ -120,11 +125,13 @@ def addNewRecipe(conn, item):
         for iid in iids:
             session.write_transaction(createRelationship, rid, iid)
 
-def containIngredientKeyword(tx,ing):
-    result = tx.run("MATCH (i:Ingredient) WHERE i.name CONTAINS $ing return i as ingredient",ing=ing)
-    return {r['ingredient']['name']:r['ingredient'].id for r in result}
 
-def getMatchedIngredients(conn,ings):
+def containIngredientKeyword(tx, ing):
+    result = tx.run("MATCH (i:Ingredient) WHERE i.name CONTAINS $ing return i as ingredient", ing=ing)
+    return {r['ingredient']['name']: r['ingredient'].id for r in result}
+
+
+def getMatchedIngredients(conn, ings):
     iids = {}
     session = conn.session()
     for ing in ings:

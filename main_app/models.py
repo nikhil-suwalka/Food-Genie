@@ -5,14 +5,6 @@ from neomodel import StructuredNode, StringProperty, DateProperty, IntegerProper
 
 # Create your models here.
 
-class Ingredient(StructuredNode):
-    ingredient_id = UniqueIdProperty()
-    name = StringProperty(required=True)
-
-
-    class Meta:
-        verbose_name = "Ingredients of a recipe"
-
 
 class Recipe(StructuredNode):
     recipe_id = UniqueIdProperty()
@@ -27,7 +19,20 @@ class Recipe(StructuredNode):
     total_time = StringProperty(required=True)
     link = StringProperty(required=True)
 
-    ingredient = RelationshipTo(Ingredient, "contains")
-
     class Meta:
         verbose_name = "Recipe details"
+
+class Ingredient(StructuredNode):
+    ingredient_id = UniqueIdProperty()
+    name = StringProperty(required=True)
+    recipe = RelationshipTo(Recipe, "is_in")
+
+    class Meta:
+        verbose_name = "Ingredients of a recipe"
+
+
+class ScrapedIngredients(StructuredNode):
+    combination = ArrayProperty(base_property=StringProperty(), required=True)
+
+    class Meta:
+        verbose_name = "Scraped ingredients IDS"
