@@ -22,6 +22,7 @@ class Recipe(StructuredNode):
     class Meta:
         verbose_name = "Recipe details"
 
+
 class Ingredient(StructuredNode):
     ingredient_id = UniqueIdProperty()
     name = StringProperty(required=True)

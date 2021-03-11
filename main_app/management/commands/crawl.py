@@ -17,8 +17,12 @@ class Command(BaseCommand):
         sett = Settings()
         sett.setmodule(my_settings)
 
+
+        f =open("hello.txt", "w")
+        f.write(options["arg"])
+        f.close()
         process = CrawlerProcess(settings=sett)
-        process.crawl(RecipeFetcher.RecipeSpider, ingredients=options["arg"])
+        process.crawl(RecipeFetcher.RecipeSpider, ingredients=options["arg"], LOG_ENABLED=False)
         process.start()
 
 

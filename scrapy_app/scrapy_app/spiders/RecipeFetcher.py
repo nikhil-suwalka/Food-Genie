@@ -8,7 +8,11 @@ class RecipeSpider(scrapy.Spider):
     allowed_domains = ['www.allrecipes.com']
 
     def __init__(self, ingredients=None, **kwargs):
+        ingredients = ingredients.replace("_", " ")
+
         ingredients = ingredients.split(",")
+
+
         # rec = ["paneer", "potato"]
 
         link = "https://www.allrecipes.com/search/results/?ingIncl="

@@ -90,6 +90,7 @@ def createIngredient(tx, ing):
     result = tx.run("CREATE (n:Ingredient {name: $name}) return ID(n) as id", name=ing)
 
 
+# TODO:optimize
 def createRelationship(tx, rid, iid):
     tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
            iid=iid)

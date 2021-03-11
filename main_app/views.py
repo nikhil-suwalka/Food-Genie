@@ -1,30 +1,22 @@
 import os
-import subprocess
 import threading
 
 from django.http import HttpResponse
+from neomodel import Q
 
 from .models import *
-from neomodel import Q
-import logging
 
 
 # Create your views here.
 
 def crawl(ingredients_list: list):
     # cmd = 'python manage.py crawl ' + ",".join(ingredients_list)
-    os.system('python manage.py crawl ' + ",".join(ingredients_list))
 
-    # with open(os.devnull, 'wb') as devnull:
-    #     subprocess.check_call([cmd], stdout=devnull, stderr=subprocess.STDOUT)
+    arg = ",".join(ingredients_list)
+    arg = arg.replace(" ", "_")
+    print(arg)
+    os.system('python manage.py crawl ' + arg)
 
-    # process = subprocess.Popen([cmd],
-    #                            stdout=subprocess.STDOUT,
-    #                            stderr=subprocess.STDOUT)
-    # stdout, stderr = process.communicate()
-    # print(stderr)
-
-    # os.system('python manage.py crawl "paneer potato"')
     # management.call_command('crawl', "paneer potato")
 
 
@@ -66,16 +58,20 @@ def getRecipesFromIngredients(ingredients_list: list):
     return sorted_recipes, recipes_dict_ob
 
 
-# Fetch recipes from database and scrape if needed
+# Fetch $return_recipe_count recipes from database with at least $all_ingredient_recipes recipes with all the ingredients and scrape if needed
 def fetchRecipes(ingredients_list: list, all_ingredient_recipes: int, return_recipe_count: int) -> list:
     ingredients_list.sort()
     counter, objects = getRecipesFromIngredients(ingredients_list)
-    print(f"Found {len(counter[0][1]) if counter else 0} recipes in database with all required ingredients")
+
+    if counter[0][0] == len(ingredients_list):
+        print(f"Found {len(counter[0][1]) if counter else 0} recipes in database with all required ingredients")
+
+    print("Total recipes found: ", sum([len(x[1]) for x in counter]))
 
     # If NOT ( number of recipes found are having all the ingredients and at least (all_ingredient_recipes) recipes
     # are there and total recipes found are at least (return_recipe_count))
     if not (counter and counter[0][0] == len(ingredients_list) and len(counter[0][1]) >= all_ingredient_recipes and sum(
-            [len(x[1]) for x in counter])):
+            [len(x[1]) for x in counter]) >= return_recipe_count):
         if not combinationExists(ingredients_list):
             print("Scraping")
             t1 = threading.Thread(target=crawl, args=([ingredients_list]))
@@ -96,14 +92,16 @@ def fetchRecipes(ingredients_list: list, all_ingredient_recipes: int, return_rec
 
 
 def homeview(request):
+    # http://127.0.0.1:8000/?ingredients=chicken&ingredients=cheese
+
     if request.method == "GET":
         ingredients = request.GET.getlist("ingredients")
         print(ingredients)
         if ingredients:
             recipes = fetchRecipes(ingredients, 8, 15)
-            print("Found ", len(recipes), "recipes")
+            print("Showing ", len(recipes), "recipes")
             for i in range(len(recipes)):
-                print(f"{i+1}: {recipes[i].name}")
+                print(f"{i + 1}: {recipes[i].name}")
     # print(logging.getLogger(__name__))
     # else:
     # t1 = threading.Thread(target=crawl, args=([["chicken"]]))
