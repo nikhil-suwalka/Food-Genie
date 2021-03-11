@@ -14,7 +14,6 @@ def crawl(ingredients_list: list):
 
     arg = ",".join(ingredients_list)
     arg = arg.replace(" ", "_")
-    print(arg)
     os.system('python manage.py crawl ' + arg)
 
     # management.call_command('crawl', "paneer potato")
@@ -63,7 +62,7 @@ def fetchRecipes(ingredients_list: list, all_ingredient_recipes: int, return_rec
     ingredients_list.sort()
     counter, objects = getRecipesFromIngredients(ingredients_list)
 
-    if counter[0][0] == len(ingredients_list):
+    if counter and counter[0][0] == len(ingredients_list):
         print(f"Found {len(counter[0][1]) if counter else 0} recipes in database with all required ingredients")
 
     print("Total recipes found: ", sum([len(x[1]) for x in counter]))
