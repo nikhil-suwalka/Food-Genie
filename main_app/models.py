@@ -7,6 +7,9 @@ from neomodel import StructuredNode, StringProperty, DateProperty, IntegerProper
 
 
 class Recipe(StructuredNode):
+
+
+
     recipe_id = UniqueIdProperty()
     name = StringProperty(required=True)
     details = StringProperty(required=True)
@@ -18,6 +21,7 @@ class Recipe(StructuredNode):
     cooking_time = StringProperty(required=True)
     total_time = StringProperty(required=True)
     link = StringProperty(required=True)
+    image_path = StringProperty(required=True)
 
     class Meta:
         verbose_name = "Recipe details"

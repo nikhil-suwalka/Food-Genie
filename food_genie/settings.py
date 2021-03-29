@@ -69,6 +69,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'custom_templatetag': 'main_app.templatetags.mytag',
+
+            }
         },
     },
 ]
@@ -129,13 +133,34 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
-
-NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:pass@localhost:7687'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+    '/static/css',
+    '/static/js',
+    '/static/bootstrap',
+    '/static/img',
+    '/static/fonts',
+]
+NEOMODEL_NEO4J_BOLT_URL = 'bolt://neo4j:nsuwalka@localhost:7687'
 NEOMODEL_SIGNALS = True
 NEOMODEL_FORCE_TIMEZONE = False
 NEOMODEL_MAX_CONNECTION_POOL_SIZE = 50
 
-
 ITEM_PIPELINES = {
-   'scrapy_app.pipelines.ScrapyAppPipeline': 300,
+    'scrapy_app.pipelines.ScrapyAppPipeline': 300,
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'ERROR',
+    },
+
 }

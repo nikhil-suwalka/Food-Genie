@@ -1,0 +1,165 @@
+#search-div {
+  width: auto;
+  height: 400px;
+  background-color: red;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 5em;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 3em;
+  padding-right: 6em;
+  min-width: 300px;
+}
+
+.input-search-cls {
+  width: 50vw;
+  margin-right: 1vw;
+  height: 40px;
+  margin-top: 2px;
+}
+
+#ingredient-tag-div {
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+  min-width: 300px;
+  min-height: 200px;
+  margin-top: 20px;
+}
+
+#ingredient-search-div {
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+  min-width: 300px;
+}
+
+#tag-holder {
+  width: 80%;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.allowed {
+  background-color: rgb(159,255,159);
+}
+
+.tag-container {
+  width: auto;
+  margin: 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  color: black;
+  cursor: default;
+}
+
+.recipe-info {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  padding-left: 20px;
+}
+
+.recipe-img {
+  width: 20%;
+  height: 100%;
+  background-color: rgb(255,202,98);
+  border-radius: 10px 0 0 10px;
+  min-width: 150px;
+}
+
+.recipe-calorie {
+  width: 20%;
+  height: 100%;
+  background-color: rgb(255,227,171);
+  border-radius: 0 10px 10px 0;
+  float: right;
+  min-width: 150px;
+}
+
+#found-text {
+  margin-left: 10vw;
+  margin-right: 10vw;
+  margin-bottom: 1vh;
+}
+
+#spacer {
+  height: 5vh;
+}
+
+.recipe-info-heading {
+  font-size: x-large;
+  color: black;
+}
+
+.recipe-info-detail {
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: pre-line;
+  overflow: hidden;
+  overflow-y: auto;
+}
+
+.recipe-info-detail {
+  color: black;
+}
+
+.recipe-calorie-text {
+  font-size: x-large;
+  color: black;
+}
+
+.recipe-calorie-value {
+  font-size: x-large;
+  font-weight: 700;
+  color: black;
+}
+
+.recipe-detailed-div {
+  align-items: center;
+  height: auto;
+  background-color: white;
+  border-radius: 10px;
+}
+
+.recipe-info-ing-heading {
+  font-size: large;
+  color: black;
+  font-weight: 600;
+}
+
+.recipe-cooking-info {
+  height: 100%;
+  width: 20%;
+  display: flex;
+  flex-direction: column;
+  align-self: self-start;
+  padding-top: 15px;
+  color: black;
+  min-width: 150px;
+}
+
+.overlay {
+	background: rgba(176, 176, 176, 0.4);
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+	z-index: 10;
+}
+
+
+#loading-div{
+	margin-left:45%;
+	margin-top:15%
+
+}

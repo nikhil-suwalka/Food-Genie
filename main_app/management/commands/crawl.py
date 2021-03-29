@@ -10,7 +10,8 @@ class Command(BaseCommand):
     help = "Release the spiders"
 
     def add_arguments(self, parser):
-        parser.add_argument("arg", type=str)
+        parser.add_argument("--includes", type=str)
+        parser.add_argument("--excludes", type=str)
         # super().add_arguments(parser)
 
     def handle(self, *args, **options):
@@ -18,7 +19,6 @@ class Command(BaseCommand):
         sett.setmodule(my_settings)
 
         process = CrawlerProcess(settings=sett)
-        process.crawl(RecipeFetcher.RecipeSpider, ingredients=options["arg"], LOG_ENABLED=False)
+        process.crawl(RecipeFetcher.RecipeSpider, ingredients=options["includes"], excludes=options["excludes"],
+                      LOG_ENABLED=False)
         process.start()
-
-

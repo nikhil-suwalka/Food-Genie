@@ -59,6 +59,7 @@ def checkRecipe(tx, link):
 
 
 def createRecipe(tx, item):
+    print("IMAGE PATH", item["image_path"])
     id = tx.run("CREATE (n:Recipe {name: $name,"
                 "details:$details, "
                 "ingredients:$ingredients,"
@@ -68,6 +69,7 @@ def createRecipe(tx, item):
                 "preparation_time:$preparation_time, "
                 "cooking_time:$cooking_time, "
                 "total_time:$total_time, "
+                "image_path:$image_path, "
                 "link:$link}) return n.identity as id",
                 name=item["title"],
                 details=item["details"],
@@ -78,12 +80,20 @@ def createRecipe(tx, item):
                 preparation_time=item["cooking_info"]["prep"],
                 cooking_time=item["cooking_info"]["cook"],
                 total_time=item["cooking_info"]["total"],
-                link=item["link"])
+                link=item["link"],
+                image_path=item["image_path"]
+                )
 
 
 def checkIngredient(tx, ing):
     result = tx.run("MATCH (i:Ingredient {name: $name}) RETURN ID(i) as id", name=ing)
     return [r['id'] for r in result]
+
+
+def getIngredientsFromRecipeID(tx, id):
+    result = tx.run("MATCH (r:Recipe),(i:Ingredient) where ID(r)=$id and (i)-[:is_in]->(r) return i.name as name",
+                    id=id)
+    return [r['name'] for r in result]
 
 
 def createIngredient(tx, ing):
@@ -97,6 +107,8 @@ def createRelationship(tx, rid, iid):
 
 
 def addNewRecipe(conn, item):
+
+
     session = conn.session()
     recipes = session.read_transaction(checkRecipe, item["link"])
     if len(recipes) == 0:

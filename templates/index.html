@@ -1,0 +1,88 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>foodgenie</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Sacramento">
+    <link rel="stylesheet" href="{% static 'css/custom-fg.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Footer-Clean.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="{% static 'css/Navigation-Clean.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body style="background: #eeeeee;">
+<div class="overlay">
+		<div id="loading-div">
+		<div id="loading-img">
+
+		<img src="{% static 'img/food-genie-loading.gif' %}" alt="loading" style="margin-left:-25px">
+
+		</div>
+		<span style="color:black">Fetching Recipes...</span>
+		</div>
+	</div>
+<nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: #FFCA62;">
+    <div class="container"><a class="navbar-brand" href="#"
+                              style="font-family: Sacramento, cursive;font-size: 29px;padding-top: 0;padding-bottom: 0;">Food
+        Genie</a></div>
+</nav>
+<section class="text-primary" style="height: 80vh;background: #eeeeee;color: rgb(0, 123, 255);">
+    <form id="myform">
+        {% csrf_token %}
+
+
+        <div id="search-div" style="background: rgba(255,0,0,0);">
+            <div id="ingredient-search-div" style="margin-top: 5vh;"><input type="text" id="input-search"
+                                                                            class="input-search-cls">
+                <button class="btn btn-primary" id="btn-find" type="button"
+                        style="margin-top: -5px;background: var(--orange);" onclick="process()"><span
+                        style="font-size: 20px;margin-right: 5px;">Search</span><span class="material-icons"
+                                                                                      style="padding-top: 2px;height: auto;font-size: 20px;">search</span>
+                </button>
+                <div id="ingredient-tag-div" style="background: rgba(108,117,125,0);">
+                    <div id="tag-holder" class="tag-holder"
+                         style="background: #eeeeee;border-color: rgb(0, 123, 255)"></div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<script src=" {% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/tags-handler.js' %}"></script>
+<script src="{% static 'js/process_ingredients_ajax.js' %}"></script>
+
+<script>
+    $('#myform').on('keyup keypress', function (e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+
+</script>
+
+
+<form id="dataform" method="post" action="/items/" type="hidden">
+    {% csrf_token %}
+    <input id="rec" name="recipes" value="" type="hidden">
+</form>
+
+</body>
+
+<script>
+	$("#btn-find").click(function () {
+		$(".overlay").show();
+	});
+</script>
+
+</html>

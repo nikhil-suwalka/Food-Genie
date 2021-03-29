@@ -20,6 +20,7 @@ class RecipeItem(scrapy.Item):
     nutrients = scrapy.Field()
     cooking_info = scrapy.Field()
     link = scrapy.Field()
+    image_path = scrapy.Field()
     pass
 
 
