@@ -98,6 +98,8 @@ def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredi
     # are there and total recipes found are at least (return_recipe_count))
     if not (counter and counter[0][0] == len(ingredients_list) and len(counter[0][1]) >= all_ingredient_recipes and sum(
             [len(x[1]) for x in counter]) >= return_recipe_count):
+
+        # Same combination have not been scraped before
         if not combinationExists(ingredients_list):
             print("Scraping")
             t1 = threading.Thread(target=crawl, args=([ingredients_list, excluded_ingredients]))

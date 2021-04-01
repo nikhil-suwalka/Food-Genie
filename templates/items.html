@@ -32,8 +32,15 @@
             {% for recipe in recipes %}
                 <a href="/recipe?id={{ recipe.id }}">
                     <div class="recipe">
-                        <div class="recipe-img"><img class="recipe-img" style="width: 100%;height: 100%;"
-                                                     src="{{ recipe.image_path }}"></div>
+                        <div class="recipe-img">
+                            {% if recipe.image_path == None %}
+                                <img class="recipe-img" style="width: 100%;height: 100%;"
+                                     src="{% static 'img/default.png' %}">
+                            {% else %}
+                                <img class="recipe-img" style="width: 100%;height: 100%;" src="{{ recipe.image_path }}">
+                            {% endif %}
+
+                        </div>
                         <div class="recipe-info">
                             <span class="recipe-info-heading">{{ recipe.name }} </span>
                             <span class="recipe-info-detail">{{ recipe.details }}</span></div>
