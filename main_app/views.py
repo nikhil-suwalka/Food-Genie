@@ -72,14 +72,16 @@ def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredi
                  return_recipe_count: int) -> list:
     ingredients_list.sort()
     recipes_dict_count, objects = getRecipesFromIngredients(ingredients_list)
-    temp, objects_excludes = getRecipesFromIngredients(excluded_ingredients)
 
-    i = 0
-    while i < len(objects):
-        if list(objects.keys())[i] in objects_excludes:
-            del objects[list(objects.keys())[i]]
-        else:
-            i += 1
+    if excluded_ingredients:
+        temp, objects_excludes = getRecipesFromIngredients(excluded_ingredients)
+
+        i = 0
+        while i < len(objects):
+            if list(objects.keys())[i] in objects_excludes:
+                del objects[list(objects.keys())[i]]
+            else:
+                i += 1
 
     counter = {}
     for i in recipes_dict_count.items():
@@ -165,7 +167,7 @@ def fetch(request):
 
         for i in range(len(recipes)):
             print(f"{i + 1}: {recipes[i].name}")
-        print(recipes[0])
+            print(recipes[i])
         recipes_list = [
             {"id": x.id, "name": x.name, "ingredients": x.ingredients, "details": x.details, "directions": x.directions,
              "nutrients": x.nutrients, "preparation_time": x.preparation_time, "cooking_time": x.cooking_time,
@@ -182,11 +184,10 @@ def recipe(request):
 
     recipe_id = request.GET.get("id")
     # recipe_id="Palak Paneer Curry"
-
     print(recipe_id)
-    # r = Recipe.nodes.get(recipe_id='e1b45f1a60274505aec16d76d4d7122b')
+    # r = Recipe.nodes.get(recipe_id="3e424eb824f041b5b0529091a2048b7c")
     # r = Recipe.nodes.get(id=14623)
-    r = Recipe.nodes.get(name=recipe_id)
+    r = Recipe.nodes.get(name="Palak Paneer Curry")
     print(r)
 
     return render(request, "recipe.html", {})

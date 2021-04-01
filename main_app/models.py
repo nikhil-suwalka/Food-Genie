@@ -8,8 +8,6 @@ from neomodel import StructuredNode, StringProperty, DateProperty, IntegerProper
 
 class Recipe(StructuredNode):
 
-
-
     recipe_id = UniqueIdProperty()
     name = StringProperty(required=True)
     details = StringProperty(required=True)

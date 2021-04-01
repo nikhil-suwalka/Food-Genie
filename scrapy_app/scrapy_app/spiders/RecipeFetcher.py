@@ -69,7 +69,8 @@ class RecipeSpider(scrapy.Spider):
             "//div[@class='nutrition-top light-underline']/span/following-sibling::text()").get()
         if nutrition_dict["total calories"]:
             nutrition_dict["total calories"] = nutrition_dict["total calories"].strip()
-
+        else:
+            nutrition_dict["total calories"] = -1
         nutritions = response.xpath("//div[@class='nutrition-body']/div")
 
         for nutrition in nutritions:
