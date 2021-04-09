@@ -30,7 +30,7 @@
             {% csrf_token %}
 
             {% for recipe in recipes %}
-                <a href="/recipe?id={{ recipe.id }}">
+                <a href="/recipe?id={{ recipe.name }}">
                     <div class="recipe">
                         <div class="recipe-img">
                             {% if recipe.image_path == None %}

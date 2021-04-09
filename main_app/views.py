@@ -1,11 +1,12 @@
+import json
 import os
 import threading
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from neomodel import Q
+
 from .models import *
-import json
-from scrapy_app.scrapy_app.pipelines import *
 
 
 # Create your views here.
@@ -15,7 +16,6 @@ def crawl(ingredients_list: list, excludes: list):
 
     inc = ",".join(ingredients_list)
     inc = inc.replace(" ", "_")
-
 
     if excludes:
         exc = ",".join(excludes)
@@ -173,7 +173,7 @@ def fetch(request):
         recipes_list = [
             {"id": x.id, "name": x.name, "ingredients": x.ingredients, "details": x.details, "directions": x.directions,
              "nutrients": x.nutrients, "preparation_time": x.preparation_time, "cooking_time": x.cooking_time,
-             "total_time": x.total_time, "image_path":x.image_path} for x in recipes]
+             "total_time": x.total_time, "image_path": x.image_path} for x in recipes]
         return HttpResponse(json.dumps({"recipes": recipes_list}), content_type="application/json")
 
 
@@ -182,14 +182,14 @@ def items(request):
         recipes = json.loads(request.POST.get("recipes"))
         return render(request, "items.html", {"recipes": recipes})
 
-def recipe(request):
 
+def recipe(request):
     recipe_id = request.GET.get("id")
     # recipe_id="Palak Paneer Curry"
     print(recipe_id)
     # r = Recipe.nodes.get(recipe_id="3e424eb824f041b5b0529091a2048b7c")
     # r = Recipe.nodes.get(id=14623)
-    r = Recipe.nodes.get(name="Palak Paneer Curry")
+    r = Recipe.nodes.get(name=recipe_id)
     print(r)
 
-    return render(request, "recipe.html", {})
+    return render(request, "recipe.html", {"recipe": r})

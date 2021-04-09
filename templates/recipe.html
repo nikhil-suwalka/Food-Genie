@@ -1,4 +1,5 @@
 {% load static %}
+{% load mytag %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -12,48 +13,53 @@
     <link rel="stylesheet" href="{% static 'css/custom-fg.css' %}">
     <link rel="stylesheet" href="{% static 'css/Footer-Clean.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="{% static 'css/Navigation-Clean.css'%}">
-    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/Navigation-Clean.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 
 <body style="background: rgb(238,238,238);">
-    <nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: #FFCA62;">
-        <div class="container"><a class="navbar-brand" href="#" style="font-family: Sacramento, cursive;font-size: 29px;padding-top: 0;padding-bottom: 0;">Food Genie</a></div>
-    </nav>
-    <section class="text-primary" style="height: 80vh;background: #eeeeee;color: rgb(0, 123, 255);">
-        <div id="spacer"></div>
-        <div class="recipe-list">
-            <div class="recipe">
-                <div class="recipe-img"><img class="recipe-img" style="width: 100%;height: 100%;" src="{% static 'img/panner%20masala.png'%}"></div>
-                <div class="recipe-info"><span class="recipe-info-heading">Paneer Masala</span><span class="recipe-info-detail">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br><br></span></div>
-                <div class="recipe-calorie"><span class="recipe-calorie-text">Calories</span><span class="recipe-calorie-value">1234 kcal</span></div>
+<nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: #FFCA62;">
+    <div class="container"><a class="navbar-brand" href="#"
+                              style="font-family: Sacramento, cursive;font-size: 29px;padding-top: 0;padding-bottom: 0;">Food
+        Genie</a></div>
+</nav>
+<section class="text-primary" style="height: 80vh;background: #eeeeee;color: rgb(0, 123, 255);">
+    <div id="spacer"></div>
+    <div class="recipe-list">
+        <div class="recipe">
+            <div class="recipe-img"><img class="recipe-img" style="width: 100%;height: 100%;"
+                                         src="{{ recipe.image_path }}"></div>
+            <div class="recipe-info"><span class="recipe-info-heading">{{ recipe.name }}</span><span
+                    class="recipe-info-detail">{{ recipe.details }}<br><br></span></div>
+            <div class="recipe-calorie"><span class="recipe-calorie-text">Calories</span><span
+                    class="recipe-calorie-value">{% dictKeyLookup recipe.nutrients "total calories" %}</span></div>
+        </div>
+        <div class="recipe-detailed-div" style="display: flex;flex-direction: row;margin-bottom: 10px;">
+            <div class="recipe-ingredients"><span class="recipe-info-ing-heading">Ingredients</span>
+                <ul style="margin-top: 10px;color: black;">
+                    {% for ingr in recipe.ingredients %}
+                        <li>{{ ingr }}</li>
+                    {% endfor %}
+
+                </ul>
             </div>
-            <div class="recipe-detailed-div" style="display: flex;flex-direction: row;margin-bottom: 10px;">
-                <div class="recipe-ingredients"><span class="recipe-info-ing-heading">Ingredients</span>
-                    <ul style="margin-top: 10px;color: black;">
-                        <li>Item 1</li>
-                        <li>Item 2</li>
-                        <li>Item 3</li>
-                        <li>Item 4</li>
-                    </ul>
-                </div>
-                <div class="recipe-cooking-info"><span>Prep:</span><span>Cook:</span><span>Total:</span><span>Servings:</span></div>
-            </div>
-            <div class="recipe-detailed-div" style="display: flex;flex-direction: row;">
-                <div class="recipe-ingredients"><span class="recipe-info-ing-heading">Directions</span>
-                    <ul style="margin-top: 10px;color: black;">
-                        <li>Item 1</li>
-                        <li>Item 2</li>
-                        <li>Item 3</li>
-                        <li>Item 4</li>
-                    </ul>
-                </div>
+            <div class="recipe-cooking-info">
+                <span>Prep: {{ recipe.preparation_time }}</span><span>Cook: {{ recipe.cooking_time }}</span><span>Total: {{ recipe.total_time}}</span></div>
+        </div>
+        <div class="recipe-detailed-div" style="display: flex;flex-direction: row;">
+            <div class="recipe-ingredients"><span class="recipe-info-ing-heading">Directions</span>
+                <ul style="margin-top: 10px;color: black;">
+                    {% for dir in recipe.directions %}
+                        <li>{{ dir }}</li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
-    </section>
-    <script src=" {% static 'js/jquery.min.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/tags-handler.js' %}"></script>
+    </div>
+</section>
+<script src=" {% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/tags-handler.js' %}"></script>
 </body>
 
 </html>
