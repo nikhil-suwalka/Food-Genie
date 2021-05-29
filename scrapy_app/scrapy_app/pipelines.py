@@ -5,6 +5,7 @@
 
 
 # useful for handling different item types with a single interface
+import logging
 
 import neo4j
 import re
@@ -12,7 +13,9 @@ import spacy
 from fuzzywuzzy import process
 
 nlp = spacy.load('en_core_web_sm')
-
+conn = None
+neo4j_log = logging.getLogger("neo4j")
+neo4j_log.setLevel(logging.CRITICAL)
 
 def getMatches(str2Match: str, strOptions: list):
     highest = process.extractOne(str2Match, strOptions, score_cutoff=80)
@@ -49,18 +52,18 @@ def getProcessedIngredients(ingredient):
 
 def getConnection():
     # conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
-    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "nsuwalka"))
+    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
     return conn
 
 
 def checkRecipe(tx, link):
-    result = tx.run("MATCH (n:Recipe) where n.link = $link return ID(n) as id", link=link)
+    result = tx.run("MATCH (n:Recipe) where n.link = $link return n.recipe_id as id", link=link)
     return [r['id'] for r in result]
 
 
 def createRecipe(tx, item):
     print("IMAGE PATH", item["image_path"])
-    id = tx.run("CREATE (n:Recipe {name: $name,"
+    result = tx.run("CREATE (n:Recipe {name: $name,"
                 "details:$details, "
                 "ingredients:$ingredients,"
                 "calories:$calories,"
@@ -70,7 +73,7 @@ def createRecipe(tx, item):
                 "cooking_time:$cooking_time, "
                 "total_time:$total_time, "
                 "image_path:$image_path, "
-                "link:$link}) return n.identity as id",
+                "link:$link}) return ID(n) as id",
                 name=item["title"],
                 details=item["details"],
                 ingredients=item["ingredients"],
@@ -83,32 +86,32 @@ def createRecipe(tx, item):
                 link=item["link"],
                 image_path=item["image_path"]
                 )
+    tx.run("MATCH (n:Recipe) where ID(n)=$id SET n.recipe_id = $id", id=[r['id'] for r in result][0])
 
 
 def checkIngredient(tx, ing):
-    result = tx.run("MATCH (i:Ingredient {name: $name}) RETURN ID(i) as id", name=ing)
+    result = tx.run("MATCH (i:Ingredient {name: $name}) RETURN i.ingredient_id as id", name=ing)
     return [r['id'] for r in result]
 
 
 def getIngredientsFromRecipeID(tx, id):
-    result = tx.run("MATCH (r:Recipe),(i:Ingredient) where ID(r)=$id and (i)-[:is_in]->(r) return i.name as name",
+    result = tx.run("MATCH (r:Recipe),(i:Ingredient) where r.recipe_id=$id and (i)-[:is_in]->(r) return i.name as name",
                     id=id)
     return [r['name'] for r in result]
 
 
 def createIngredient(tx, ing):
     result = tx.run("CREATE (n:Ingredient {name: $name}) return ID(n) as id", name=ing)
+    tx.run("MATCH (n:Ingredient) where ID(n)=$id SET n.ingredient_id = $id", id = [r['id'] for r in result][0])
 
 
 # TODO:optimize
 def createRelationship(tx, rid, iid):
-    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE ID(a) = $rid AND ID(b) = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
+    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE a.recipe_id = $rid AND b.ingredient_id = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
            iid=iid)
 
 
 def addNewRecipe(conn, item):
-
-
     session = conn.session()
     recipes = session.read_transaction(checkRecipe, item["link"])
     if len(recipes) == 0:
@@ -155,7 +158,8 @@ def getMatchedIngredients(conn, ings):
 
 class ScrapyAppPipeline:
     def process_item(self, item, spider):
-        conn = getConnection()
+        global conn
+        conn = getConnection() if conn is None else conn
         addNewRecipe(conn, item)
-        conn.close()
+        # conn.close()
         return item
