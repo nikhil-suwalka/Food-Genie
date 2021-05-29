@@ -20,6 +20,7 @@ class Recipe(StructuredNode):
     total_time = StringProperty(required=True)
     link = StringProperty(required=True)
     image_path = StringProperty(required=True)
+    view_count = IntegerProperty(required=False,default=0)
 
     class Meta:
         verbose_name = "Recipe details"

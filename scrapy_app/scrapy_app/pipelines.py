@@ -73,6 +73,7 @@ def createRecipe(tx, item):
                 "cooking_time:$cooking_time, "
                 "total_time:$total_time, "
                 "image_path:$image_path, "
+                "view_count:$vc,"
                 "link:$link}) return ID(n) as id",
                 name=item["title"],
                 details=item["details"],
@@ -84,7 +85,8 @@ def createRecipe(tx, item):
                 cooking_time=item["cooking_info"]["cook"],
                 total_time=item["cooking_info"]["total"],
                 link=item["link"],
-                image_path=item["image_path"]
+                image_path=item["image_path"],
+                vc = 0
                 )
     tx.run("MATCH (n:Recipe) where ID(n)=$id SET n.recipe_id = $id", id=[r['id'] for r in result][0])
 

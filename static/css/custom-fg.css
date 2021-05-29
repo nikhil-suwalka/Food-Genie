@@ -147,7 +147,7 @@
 }
 
 .overlay {
-	background: rgba(176, 176, 176, 0.4);
+	background: rgba(176, 176, 176, 0.6);
     display: none;
     position: absolute;
     top: 0;

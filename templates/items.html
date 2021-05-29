@@ -14,11 +14,12 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{% static 'css/Navigation-Clean.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body style="background: rgb(238,238,238);">
 <nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: #FFCA62;">
-    <div class="container"><a class="navbar-brand" href="#"
+    <div class="container"><a class="navbar-brand" href="/"
                               style="font-family: Sacramento, cursive;font-size: 29px;padding-top: 0;padding-bottom: 0;">Food
         Genie</a></div>
 </nav>
@@ -46,7 +47,10 @@
                             <span class="recipe-info-detail">{{ recipe.details }}</span></div>
                         <div class="recipe-calorie"><span class="recipe-calorie-text">Calories</span><span
                                 class="recipe-calorie-value">{% dictKeyLookup recipe.nutrients "total calories" %}</span>
+
+                            <span class="recipe-calorie-text"><i class="fa fa-eye" style="font-size:36px"></i>&nbsp;{{ recipe.view_count }}</span>
                         </div>
+
                     </div>
                 </a>
             {% endfor %}

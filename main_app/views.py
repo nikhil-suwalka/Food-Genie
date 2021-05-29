@@ -173,7 +173,7 @@ def fetch(request):
         recipes_list = [
             {"id": x.id, "name": x.name, "ingredients": x.ingredients, "details": x.details, "directions": x.directions,
              "nutrients": x.nutrients, "preparation_time": x.preparation_time, "cooking_time": x.cooking_time,
-             "total_time": x.total_time, "image_path": x.image_path} for x in recipes]
+             "total_time": x.total_time, "image_path": x.image_path, "view_count": x.view_count} for x in recipes]
         return HttpResponse(json.dumps({"recipes": recipes_list}), content_type="application/json")
 
 
@@ -185,11 +185,9 @@ def items(request):
 
 def recipe(request):
     recipe_id = request.GET.get("id")
-    # recipe_id="Palak Paneer Curry"
-    print(recipe_id)
-    # r = Recipe.nodes.get(recipe_id="3e424eb824f041b5b0529091a2048b7c")
-    # r = Recipe.nodes.get(id=14623)
     r = Recipe.nodes.get(name=recipe_id)
-    print(r)
-
+    r.view_count+=1
+    if r.image_path is None:
+        r.image_path = '/static/img/default.png'
+    r.save()
     return render(request, "recipe.html", {"recipe": r})

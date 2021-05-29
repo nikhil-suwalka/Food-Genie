@@ -15,30 +15,46 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="{% static 'css/Navigation-Clean.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/slider.css' %}">
+    <script src="{% static 'js/jquery.min.js'%}"></script>
+
 </head>
 
 <body style="background: #eeeeee;">
 <div class="overlay">
-		<div id="loading-div">
-		<div id="loading-img">
+    <div id="loading-div" style="background-color: #ffebbe;max-width: 170px;padding: 20px;border-radius: 30px">
+        <div id="loading-img">
 
-		<img src="{% static 'img/food-genie-loading.gif' %}" alt="loading" style="margin-left:-25px">
+            <img src="{% static 'img/food-genie-loading.gif' %}" alt="loading" style="margin-left:-25px">
 
-		</div>
-		<span style="color:black">Fetching Recipes...</span>
-		</div>
-	</div>
+        </div>
+        <span style="color:black">Fetching Recipes...</span>
+    </div>
+</div>
 <nav class="navbar navbar-light navbar-expand-md navigation-clean" style="background: #FFCA62;">
-    <div class="container"><a class="navbar-brand" href="#"
+    <div class="container"><a class="navbar-brand" href="/"
                               style="font-family: Sacramento, cursive;font-size: 29px;padding-top: 0;padding-bottom: 0;">Food
         Genie</a></div>
 </nav>
 <section class="text-primary" style="height: 80vh;background: #eeeeee;color: rgb(0, 123, 255);">
     <form id="myform">
         {% csrf_token %}
+        <div style="width: 100%;position:fixed;left: 16%;margin-top: 10px">
+            <div style="width: 60%;height: 100px;background-color: #ffeba8;margin-top: 2vh;border-radius: 10px;padding: 10px;color: #0b2e13;font-style: italic">
+                <p style="margin-bottom: 2px">1) Adjust the calories(Kcal) using the slider.</p>
+                <p style="margin-bottom: 2px">2) Add ingredients using the search bar, Press enter to add a ingredient to the list.</p>
+                <p style="margin-bottom: 2px">3) Click on Search to find the recipes.</p>
+            </div>
+        </div>
 
 
         <div id="search-div" style="background: rgba(255,0,0,0);">
+
+            <div class="range-slider">
+                <input class="range-slider__range" type="range" value="1000" min="0" max="5000" step="100"/>
+
+                <span class="range-slider__value">0</span>
+            </div>
             <div id="ingredient-search-div" style="margin-top: 5vh;"><input type="text" id="input-search"
                                                                             class="input-search-cls">
                 <button class="btn btn-primary" id="btn-find" type="button"
@@ -71,7 +87,7 @@
 
 </script>
 
-
+<script src="{% static 'js/slider.js'%}"></script>
 <form id="dataform" method="post" action="/items/" type="hidden">
     {% csrf_token %}
     <input id="rec" name="recipes" value="" type="hidden">
@@ -80,9 +96,9 @@
 </body>
 
 <script>
-	$("#btn-find").click(function () {
-		$(".overlay").show();
-	});
+    $("#btn-find").click(function () {
+        $(".overlay").show();
+    });
 </script>
 
 </html>
