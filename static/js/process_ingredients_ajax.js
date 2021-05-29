@@ -33,12 +33,12 @@ function process() {
 
     var tags_json = JSON.stringify(tags);
     var allowed_list_json = JSON.stringify(allowed_list);
-
+    value = $('.range-slider__range').val()
     $.ajax({
         type: "POST",
         url: "/fetch/",
         dataType: "json",
-        data: {"tags": tags_json, "allowed_list": allowed_list_json},
+        data: {"tags": tags_json, "allowed_list": allowed_list_json,"calorie_slider": value},
         headers: {"X-CSRFToken": cookies["csrftoken"]},
 
         success:

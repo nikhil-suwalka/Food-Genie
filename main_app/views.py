@@ -69,7 +69,7 @@ def getRecipesFromIngredients(ingredients_list: list):
 # Fetch $return_recipe_count recipes from database with at least $all_ingredient_recipes recipes with all the
 # ingredients and scrape if needed
 def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredient_recipes: int,
-                 return_recipe_count: int) -> list:
+                 return_recipe_count: int, calorie_slider: float) -> list:
     ingredients_list.sort()
     recipes_dict_count, objects = getRecipesFromIngredients(ingredients_list)
 
@@ -119,8 +119,8 @@ def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredi
         recipes = [objects[x] for x in counter[0][1]]
         for i in range(1, len(counter)):
             recipes.extend([objects[x] for x in counter[i][1]])
-            if len(recipes) >= return_recipe_count:
-                return recipes[:return_recipe_count]
+        print("Hello", recipes[:return_recipe_count][0].calories)
+        recipes = [recipe for recipe in recipes if recipe.calories <= calorie_slider]
         return recipes[:return_recipe_count]
     return []
 
@@ -154,6 +154,7 @@ def fetch(request):
     if request.method == "POST":
         tags = json.loads(request.POST.get("tags"))
         allowed_list = json.loads(request.POST.get("allowed_list"))
+        calorie_slider = request.POST.get("calorie_slider")
 
         includes = []
         excludes = []
@@ -164,7 +165,7 @@ def fetch(request):
                 excludes.append(tags[i])
 
         print(includes, excludes)
-        recipes = fetchRecipes(includes, excludes, 8, 15)
+        recipes = fetchRecipes(includes, excludes, 8, 15, float(calorie_slider))
         print("Showing ", len(recipes), "recipes")
 
         for i in range(len(recipes)):
@@ -186,7 +187,7 @@ def items(request):
 def recipe(request):
     recipe_id = request.GET.get("id")
     r = Recipe.nodes.get(name=recipe_id)
-    r.view_count+=1
+    r.view_count += 1
     if r.image_path is None:
         r.image_path = '/static/img/default.png'
     r.save()
