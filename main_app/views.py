@@ -174,14 +174,35 @@ def fetch(request):
         recipes_list = [
             {"id": x.id, "name": x.name, "ingredients": x.ingredients, "details": x.details, "directions": x.directions,
              "nutrients": x.nutrients, "preparation_time": x.preparation_time, "cooking_time": x.cooking_time,
-             "total_time": x.total_time, "image_path": x.image_path, "view_count": x.view_count} for x in recipes]
+             "total_time": x.total_time, "image_path": x.image_path if x.image_path else '/static/img/default.png', "view_count": x.view_count} for x in recipes]
         return HttpResponse(json.dumps({"recipes": recipes_list}), content_type="application/json")
 
 
 def items(request):
+
     if request.method == "POST":
-        recipes = json.loads(request.POST.get("recipes"))
-        return render(request, "items.html", {"recipes": recipes})
+        if request.POST.get("view"):
+            recipes = json.loads(request.POST.get("view"))
+            recipes = sorted(recipes, key=lambda x: x["view_count"], reverse=True)
+            raw = request.POST.get("view")
+
+        elif request.POST.get("match"):
+            recipes = json.loads(request.POST.get("match"))
+            raw = request.POST.get("match")
+
+        elif request.POST.get("calorie"):
+            recipes = json.loads(request.POST.get("calorie"))
+
+            recipes = sorted(recipes, key=lambda x: x["nutrients"]["total calories"])
+            raw = request.POST.get("calorie")
+
+        else:
+            print("here")
+            recipes = json.loads(request.POST.get("recipes"))
+            raw = request.POST.get("recipes")
+            print("RAW", raw)
+
+    return render(request, "items.html", {"recipes": recipes, "recipe_json": raw})
 
 
 def recipe(request):
