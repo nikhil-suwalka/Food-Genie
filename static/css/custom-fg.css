@@ -163,3 +163,13 @@
 	margin-top:15%
 
 }
+
+.sorter{
+  color: #0b2e13;
+  cursor: pointer;
+}
+
+.sorter:hover{
+  color: #fd7e14;
+  cursor: pointer;
+}
