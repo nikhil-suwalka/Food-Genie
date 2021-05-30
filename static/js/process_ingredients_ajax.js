@@ -28,34 +28,65 @@ function post(path, parameters) {
     form.submit();
 }
 
+function fetch(tags_json, allowed_list_json, value){
+    $.ajax({
+            type: "POST",
+            url: "/fetch/",
+            dataType: "json",
+            data: {"tags": tags_json, "allowed_list": allowed_list_json, "calorie_slider": value},
+            headers: {"X-CSRFToken": cookies["csrftoken"]},
+
+            success:
+                function (data) {
+                    var recipes = data.recipes;
+
+                    var form = $("#dataform");
+                    $('#rec').val(JSON.stringify(recipes));
+                    form.submit();
+
+                },
+            error:
+                function (data) {
+                    alert("ERROR");
+                }
+
+        });
+}
+
 function process() {
-
-
     var tags_json = JSON.stringify(tags);
     var allowed_list_json = JSON.stringify(allowed_list);
     value = $('.range-slider__range').val()
-    $.ajax({
+    if(tags.length === 0){
+        //random
+       $.ajax({
         type: "POST",
-        url: "/fetch/",
+        url: "/random/",
         dataType: "json",
-        data: {"tags": tags_json, "allowed_list": allowed_list_json,"calorie_slider": value},
+         // async: false,
+        data: {},
         headers: {"X-CSRFToken": cookies["csrftoken"]},
 
         success:
             function (data) {
-                var recipes = data.recipes;
-                console.log(recipes);
+                tags_json = data["data"];
+                data = JSON.parse(data["data"]);
+                allowed_list_json = [];
+                for(var i=0;i<data.length;i++)
+                    allowed_list_json.push(1);
+                allowed_list_json = JSON.stringify(allowed_list_json);
 
-                var form = $("#dataform");
-                $('#rec').val(JSON.stringify(recipes));
-                form.submit();
-
+                $("#loading_text").html("Randomly picking recipes...");
+                fetch(tags_json,allowed_list_json,value);
             },
         error:
             function (data) {
                 alert("ERROR");
             }
 
-    });
+        });
+    }else {
+        fetch(tags_json,allowed_list_json,value);
+    }
 
 }

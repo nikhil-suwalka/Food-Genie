@@ -1,8 +1,9 @@
 import json
 import os
 import threading
+from random import randint
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from neomodel import Q
 
@@ -63,6 +64,7 @@ def getRecipesFromIngredients(ingredients_list: list):
 
     # maximum = max(sorted_recipes, key=lambda x: x[1])[1]
     # print(maximum)
+    print("TESTING",recipes_dict_count)
     return recipes_dict_count, recipes_dict_ob
 
 
@@ -107,6 +109,15 @@ def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredi
             t1.join()
             addCombination(ingredients_list)
             recipes_dict_count, objects = getRecipesFromIngredients(ingredients_list)
+
+            if excluded_ingredients:
+                i = 0
+                while i < len(objects):
+                    if list(objects.keys())[i] in objects_excludes:
+                        del objects[list(objects.keys())[i]]
+                    else:
+                        i += 1
+
             counter = {}
             for i in recipes_dict_count.items():
                 if i[0] in objects:
@@ -119,7 +130,6 @@ def fetchRecipes(ingredients_list: list, excluded_ingredients: list, all_ingredi
         recipes = [objects[x] for x in counter[0][1]]
         for i in range(1, len(counter)):
             recipes.extend([objects[x] for x in counter[i][1]])
-        print("Hello", recipes[:return_recipe_count][0].calories)
         recipes = [recipe for recipe in recipes if recipe.calories <= calorie_slider]
         return recipes[:return_recipe_count]
     return []
@@ -153,6 +163,8 @@ def homeview(request):
 def fetch(request):
     if request.method == "POST":
         tags = json.loads(request.POST.get("tags"))
+
+        print("TAGS",tags)
         allowed_list = json.loads(request.POST.get("allowed_list"))
         calorie_slider = request.POST.get("calorie_slider")
 
@@ -197,10 +209,8 @@ def items(request):
             raw = request.POST.get("calorie")
 
         else:
-            print("here")
             recipes = json.loads(request.POST.get("recipes"))
             raw = request.POST.get("recipes")
-            print("RAW", raw)
 
     return render(request, "items.html", {"recipes": recipes, "recipe_json": raw})
 
@@ -213,3 +223,14 @@ def recipe(request):
         r.image_path = '/static/img/default.png'
     r.save()
     return render(request, "recipe.html", {"recipe": r})
+
+def randomRecipeFetcher(request):
+    all_nodes = Ingredient.nodes.all()
+    all_nodes = [ing.name for ing in all_nodes]
+    ingredient_count = 3
+    random_ingredients = []
+
+    for i in range(ingredient_count):
+        rd = randint(0,len(all_nodes)-1)
+        random_ingredients.append(all_nodes[rd].split()[0])
+    return JsonResponse({"data":json.dumps(random_ingredients)})

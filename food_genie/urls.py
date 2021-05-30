@@ -25,6 +25,7 @@ urlpatterns = [
     path("fetch/", fetch, name="Fetch"),
     path("items/", items, name="Items"),
     path("recipe/", recipe, name="Recipe"),
+    path("random/", randomRecipeFetcher, name="Random"),
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
 ]
