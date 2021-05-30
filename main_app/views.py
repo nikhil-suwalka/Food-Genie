@@ -193,7 +193,7 @@ def items(request):
         elif request.POST.get("calorie"):
             recipes = json.loads(request.POST.get("calorie"))
 
-            recipes = sorted(recipes, key=lambda x: x["nutrients"]["total calories"])
+            recipes = sorted(recipes, key=lambda x: float(x["nutrients"]["total calories"]))
             raw = request.POST.get("calorie")
 
         else:
