@@ -21,9 +21,9 @@ def crawl(ingredients_list: list, excludes: list):
     if excludes:
         exc = ",".join(excludes)
         exc = exc.replace(" ", "_")
-        os.system('python manage.py crawl --includes ' + inc + " --excludes " + exc)
+        os.system('py manage.py crawl --includes ' + inc + " --excludes " + exc)
     else:
-        os.system('python manage.py crawl --includes ' + inc)
+        os.system('py manage.py crawl --includes ' + inc)
 
     # management.call_command('crawl', "paneer potato")
 

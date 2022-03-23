@@ -11,8 +11,6 @@ class RecipeSpider(scrapy.Spider):
         ingredients = ingredients.replace("_", " ")
         ingredients = ingredients.split(",")
 
-
-
         # rec = ["paneer", "potato"]
 
         link = "https://www.allrecipes.com/search/results/?"
@@ -35,12 +33,15 @@ class RecipeSpider(scrapy.Spider):
     def parse(self, response, **kwargs):
 
         # NEW
-        title = response.xpath("//div/div/div/a/h3[@class='card__title']/text()").getall()
+        title = response.xpath("//div/div/div/a/h3[@class='card__title elementFont__resetHeading']/text()").getall()
         links = response.xpath(
             "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/a/@href").getall()
         details = response.xpath(
-            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/div[@class='card__summary']/text()").getall()
+            "//div[@class='component card card__recipe card__facetedSearchResult']/div/div/div[@class='card__summary elementFont__details--paragraphWithin margin-8-tb']/text()").getall()
 
+        print("title", title, len(title))
+        print("LINKS", links, len(links))
+        print("details", details, len(details))
         # title = response.xpath("//h3/a/span/text()").getall()
         # links = response.xpath("//h3/a/@href").getall()
         # details = response.xpath("//a/div[@class='fixed-recipe-card__description']/text()").getall()
@@ -58,7 +59,8 @@ class RecipeSpider(scrapy.Spider):
     def parse_links(self, response):
         logging.info(response.url)
 
-        ingredients = response.xpath("//label/span/span[@class='ingredients-item-name']/text()").getall()
+        ingredients = response.xpath(
+            "//label/span/span[@class='ingredients-item-name elementFont__body']/text()").getall()
         ingredients = [x.strip() for x in ingredients]
         directions = response.xpath("//li/div/div/p/text()").getall()
         directions = [x for x in directions]
@@ -66,12 +68,12 @@ class RecipeSpider(scrapy.Spider):
         nutrition_dict = {}
 
         nutrition_dict["total calories"] = response.xpath(
-            "//div[@class='nutrition-top light-underline']/span/following-sibling::text()").get()
+            "//div[@class='nutrition-top light-underline elementFont__subtitle']/span/following-sibling::text()").get()
         if nutrition_dict["total calories"]:
             nutrition_dict["total calories"] = nutrition_dict["total calories"].strip()
         else:
             nutrition_dict["total calories"] = -1
-        nutritions = response.xpath("//div[@class='nutrition-body']/div")
+        nutritions = response.xpath("//div[@class='nutrition-body elementFont__details']/div")
 
         for nutrition in nutritions:
             nutrition_dict[nutrition.xpath("span[1]/text()").get().strip()] = nutrition.xpath(
@@ -81,7 +83,8 @@ class RecipeSpider(scrapy.Spider):
                     nutrition.xpath("span[1]/text()").get().strip()].strip()
 
         cooking_details = {}
-        cookings = response.xpath("//section[@class='recipe-meta-container two-subcol-content clearfix']/div[1]/div")
+        cookings = response.xpath(
+            "//section[@class='recipe-meta-container two-subcol-content clearfix recipeMeta']/div[1]/div")
         for cooking in cookings:
             cooking_details[cooking.xpath("div[1]/text()").get().strip().split(':')[0]] = cooking.xpath(
                 "div[2]/text()").get()
@@ -101,7 +104,6 @@ class RecipeSpider(scrapy.Spider):
             recipe["image_path"] = recipe["image_path"].strip()
         else:
             recipe["image_path"] = None
-
 
         recipe["title"] = response.request.meta["title"]
         recipe["details"] = response.request.meta["details"]

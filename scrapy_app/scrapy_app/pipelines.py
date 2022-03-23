@@ -7,8 +7,9 @@
 # useful for handling different item types with a single interface
 import logging
 
-import neo4j
 import re
+
+import neo4j
 import spacy
 from fuzzywuzzy import process
 
@@ -16,6 +17,8 @@ nlp = spacy.load('en_core_web_sm')
 conn = None
 neo4j_log = logging.getLogger("neo4j")
 neo4j_log.setLevel(logging.CRITICAL)
+conn = None
+
 
 def getMatches(str2Match: str, strOptions: list):
     highest = process.extractOne(str2Match, strOptions, score_cutoff=80)
@@ -52,7 +55,8 @@ def getProcessedIngredients(ingredient):
 
 def getConnection():
     # conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
-    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "pass"))
+    conn = neo4j.GraphDatabase.driver("bolt://localhost:7687", auth=("neo4j", "nsuwalka"), encrypted=False,
+                                      max_connection_lifetime=3000, keep_alive=True)
     return conn
 
 
@@ -64,30 +68,30 @@ def checkRecipe(tx, link):
 def createRecipe(tx, item):
     print("IMAGE PATH", item["image_path"])
     result = tx.run("CREATE (n:Recipe {name: $name,"
-                "details:$details, "
-                "ingredients:$ingredients,"
-                "calories:$calories,"
-                "directions:$directions,"
-                "nutrients:$nutrients,"
-                "preparation_time:$preparation_time, "
-                "cooking_time:$cooking_time, "
-                "total_time:$total_time, "
-                "image_path:$image_path, "
-                "view_count:$vc,"
-                "link:$link}) return ID(n) as id",
-                name=item["title"],
-                details=item["details"],
-                ingredients=item["ingredients"],
-                calories=item["nutrients"]["total calories"],
-                directions=item["directions"],
-                nutrients=str(item["nutrients"]).replace('\'', '"'),
-                preparation_time=item["cooking_info"]["prep"],
-                cooking_time=item["cooking_info"]["cook"],
-                total_time=item["cooking_info"]["total"],
-                link=item["link"],
-                image_path=item["image_path"],
-                vc = 0
-                )
+                    "details:$details, "
+                    "ingredients:$ingredients,"
+                    "calories:$calories,"
+                    "directions:$directions,"
+                    "nutrients:$nutrients,"
+                    "preparation_time:$preparation_time, "
+                    "cooking_time:$cooking_time, "
+                    "total_time:$total_time, "
+                    "image_path:$image_path, "
+                    "view_count:$vc,"
+                    "link:$link}) return ID(n) as id",
+                    name=item["title"],
+                    details=item["details"],
+                    ingredients=item["ingredients"],
+                    calories=item["nutrients"]["total calories"],
+                    directions=item["directions"],
+                    nutrients=str(item["nutrients"]).replace('\'', '"'),
+                    preparation_time=item["cooking_info"]["prep"],
+                    cooking_time=item["cooking_info"]["cook"],
+                    total_time=item["cooking_info"]["total"],
+                    link=item["link"],
+                    image_path=item["image_path"],
+                    vc=0
+                    )
     tx.run("MATCH (n:Recipe) where ID(n)=$id SET n.recipe_id = $id", id=[r['id'] for r in result][0])
 
 
@@ -104,13 +108,15 @@ def getIngredientsFromRecipeID(tx, id):
 
 def createIngredient(tx, ing):
     result = tx.run("CREATE (n:Ingredient {name: $name}) return ID(n) as id", name=ing)
-    tx.run("MATCH (n:Ingredient) where ID(n)=$id SET n.ingredient_id = $id", id = [r['id'] for r in result][0])
+    tx.run("MATCH (n:Ingredient) where ID(n)=$id SET n.ingredient_id = $id", id=[r['id'] for r in result][0])
 
 
 # TODO:optimize
 def createRelationship(tx, rid, iid):
-    tx.run("MATCH (a:Recipe), (b:Ingredient) WHERE a.recipe_id = $rid AND b.ingredient_id = $iid MERGE (b)-[r:is_in]->(a)", rid=rid,
-           iid=iid)
+    tx.run(
+        "MATCH (a:Recipe), (b:Ingredient) WHERE a.recipe_id = $rid AND b.ingredient_id = $iid MERGE (b)-[r:is_in]->(a)",
+        rid=rid,
+        iid=iid)
 
 
 def addNewRecipe(conn, item):
@@ -119,7 +125,7 @@ def addNewRecipe(conn, item):
     if len(recipes) == 0:
         # create ingredients if not present
         iids = []
-
+        print("1234", item["ingredients"])
         for ing in item['ingredients']:
             # result = session.read_transaction(checkIngredient, ing)
             processed_ings = getProcessedIngredients(ing)

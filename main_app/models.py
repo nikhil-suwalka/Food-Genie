@@ -1,5 +1,4 @@
-from django.db import models
-from neomodel import StructuredNode, StringProperty, DateProperty, IntegerProperty, UniqueIdProperty, ArrayProperty, \
+from neomodel import StructuredNode, StringProperty, IntegerProperty, UniqueIdProperty, ArrayProperty, \
     JSONProperty, FloatProperty, RelationshipTo
 
 
@@ -7,7 +6,6 @@ from neomodel import StructuredNode, StringProperty, DateProperty, IntegerProper
 
 
 class Recipe(StructuredNode):
-
     recipe_id = UniqueIdProperty()
     name = StringProperty(required=True)
     details = StringProperty(required=True)
@@ -20,7 +18,7 @@ class Recipe(StructuredNode):
     total_time = StringProperty(required=True)
     link = StringProperty(required=True)
     image_path = StringProperty(required=True)
-    view_count = IntegerProperty(required=False,default=0)
+    view_count = IntegerProperty(required=False, default=0)
 
     class Meta:
         verbose_name = "Recipe details"
@@ -36,7 +34,7 @@ class Ingredient(StructuredNode):
 
 
 class ScrapedIngredients(StructuredNode):
-    combination = ArrayProperty(base_property=StringProperty(), required=True)
+    combination = ArrayProperty(base_property=StringProperty())
 
     class Meta:
         verbose_name = "Scraped ingredients IDS"

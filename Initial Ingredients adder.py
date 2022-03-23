@@ -9,7 +9,7 @@ error = 0
 unique_ingredients = set()
 for i in range(len(data)):
     try:
-        d = data.iloc[i, 10].replace("'", "\"")
+        d = data.iloc[i, 0].replace("'", "\"")
         j = json.loads(d)
         for ingr in j:
             unique_ingredients.add(ingr)
@@ -17,6 +17,8 @@ for i in range(len(data)):
         pass
 print("Length: ", len(unique_ingredients))
 print(unique_ingredients)
+
+open("ingredients.txt", "w").write(str(unique_ingredients))
 
 conn = getConnection()
 session = conn.session()
